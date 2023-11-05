@@ -27,6 +27,19 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
                                 PARAMETER_DEFAULTS[PARAM::GAIN] / 100.0f);
   bbd_l = std::make_unique<BBD>(float(sampleRate));
   bbd_r = std::make_unique<BBD>(float(sampleRate));
+  mix_l = std::make_unique<daisysp::CrossFade>();
+  mix_l->Init();
+  mix_l->SetCurve(daisysp::CROSSFADE_CPOW);
+  mix_r = std::make_unique<daisysp::CrossFade>();
+  mix_r->Init();
+  mix_r->SetCurve(daisysp::CROSSFADE_CPOW);
+
+  filter_l = std::make_unique<daisysp::Svf>();
+  filter_l->Init((float)sampleRate);
+  filter_l->SetFreq(8000.f);
+  filter_r = std::make_unique<daisysp::Svf>();
+  filter_r->Init((float)sampleRate);
+  filter_r->SetFreq(8000.f);
 }
 
 void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer,
@@ -48,6 +61,9 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   auto lo_g = state->param_value(PARAM::LOW_GAIN);
   auto hi_f = state->param_value(PARAM::HIGH_FREQ);
   auto hi_g = state->param_value(PARAM::HIGH_GAIN);
+
+  auto pos = state->param_value(PARAM::GAIN) / 100.f;
+  auto lp_f = state->param_value(PARAM::LP_FREQ);
 
   //--------------------------------------------------------------------------------
   // process samples below. use the buffer argument that is passed in.
@@ -75,6 +91,11 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   bbd_l->setHighGain(hi_g);
   bbd_r->setHighGain(hi_g);
 
+  mix_l->SetPos(pos);
+  mix_r->SetPos(pos);
+  filter_l->SetFreq(lp_f);
+  filter_r->SetFreq(lp_f);
+
   for (size_t i = 0; i < 4; i++) {
     bbd_l->setTapLevel((int)i, state->param_value(PARAM::TAP_ONE + i) / 100.f);
     bbd_r->setTapLevel((int)i, state->param_value(PARAM::TAP_ONE + i) / 100.f);
@@ -85,14 +106,20 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   auto *out_buffer = buffer.getWritePointer(0);
 
   for (auto sample = 0; sample < buffer.getNumSamples(); ++sample) {
-    out_buffer[sample] = bbd_l->process(in_buffer[sample]);
+    float pre_l = in_buffer[sample];
+    filter_l->Process(bbd_l->process(pre_l));
+    float post_l = filter_l->Low();
+    out_buffer[sample] = mix_l->Process(pre_l, post_l);
   }
 
   in_buffer = buffer.getReadPointer(1);
   out_buffer = buffer.getWritePointer(1);
 
   for (auto sample = 0; sample < buffer.getNumSamples(); ++sample) {
-    out_buffer[sample] = bbd_r->process(in_buffer[sample]);
+    float pre_r = in_buffer[sample];
+    filter_r->Process(bbd_r->process(pre_r));
+    float post_r = filter_r->Low();
+    out_buffer[sample] = mix_r->Process(pre_r, post_r);
   }
 
   // bbd->process(buffer);
