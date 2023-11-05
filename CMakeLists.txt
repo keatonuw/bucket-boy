@@ -101,6 +101,7 @@ target_sources($ENV{PLUGIN_NAME}
         src/interface/ParameterSlider.cpp
         src/audio/Gain.cpp
         src/audio/BBD.cpp
+        src/audio/ShelfFilter.cpp
         )
 
 #--------------------------------------------------------------------------------

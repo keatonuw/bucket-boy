@@ -44,6 +44,11 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   auto requested_length = (int)state->param_value(PARAM::STAGES);
   auto requested_noise = state->param_value(PARAM::NOISE) / 1000.0f;
 
+  auto lo_f = state->param_value(PARAM::LOW_FREQ);
+  auto lo_g = state->param_value(PARAM::LOW_GAIN);
+  auto hi_f = state->param_value(PARAM::HIGH_FREQ);
+  auto hi_g = state->param_value(PARAM::HIGH_GAIN);
+
   //--------------------------------------------------------------------------------
   // process samples below. use the buffer argument that is passed in.
   // for an audio effect, buffer is filled with input samples, and you should
@@ -61,6 +66,14 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   bbd_r->setLength(requested_length);
   bbd_l->setNoiseAmount(requested_noise);
   bbd_r->setNoiseAmount(requested_noise);
+  bbd_l->setLowFreq(lo_f);
+  bbd_r->setLowFreq(lo_f);
+  bbd_l->setLowGain(lo_g);
+  bbd_r->setLowGain(lo_g);
+  bbd_l->setHighFreq(hi_f);
+  bbd_r->setHighFreq(hi_f);
+  bbd_l->setHighGain(hi_g);
+  bbd_r->setHighGain(hi_g);
 
   for (size_t i = 0; i < 4; i++) {
     bbd_l->setTapLevel((int)i, state->param_value(PARAM::TAP_ONE + i) / 100.f);

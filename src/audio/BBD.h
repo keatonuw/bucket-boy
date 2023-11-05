@@ -1,29 +1,11 @@
 #pragma once
 
 #include "Noise/whitenoise.h"
+#include "ShelfFilter.h"
 #include <daisysp.h>
 #include <juce_audio_basics/juce_audio_basics.h>
 
 #define DBUF_SIZE (4096 * 4)
-
-// class BBD {
-// public:
-//   BBD(float sample_rate, int num_channels);
-//   void process(juce::AudioBuffer<float> &buffer);
-//   void setFeedback(float fb);
-//   void setLength(int length);
-//
-// private:
-//   int output_channels;
-//   int length;
-//   int pos;
-//   float del_line[4096 * 4];
-//   float fb;
-//   float fb_amt;
-//   daisysp::Oscillator clock;
-//
-//   void samp(float s);
-// };
 
 class BBD {
 public:
@@ -34,6 +16,11 @@ public:
   void setLength(int len);
   void setNoiseAmount(float n_amt);
   void setTapLevel(int tap_num, float tap_lvl);
+
+  void setLowGain(float lo_gain);
+  void setLowFreq(float lo_freq);
+  void setHighGain(float hi_gain);
+  void setHighFreq(float hi_freq);
 
 private:
   int length;
@@ -47,6 +34,8 @@ private:
   float noise_amt;
   daisysp::Oscillator clock;
   daisysp::WhiteNoise noise;
+  ShelfFilter lo_shelf;
+  ShelfFilter hi_shelf;
 
   void sample(float s);
 };

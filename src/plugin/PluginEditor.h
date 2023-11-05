@@ -54,6 +54,11 @@ private:
   std::unique_ptr<ParameterSlider> length_slider;
   std::unique_ptr<ParameterSlider> stages_slider;
   std::unique_ptr<ParameterSlider> noise_slider;
+  std::unique_ptr<ParameterSlider> lo_freq_slider;
+  std::unique_ptr<ParameterSlider> lo_gain_slider;
+  std::unique_ptr<ParameterSlider> hi_freq_slider;
+  std::unique_ptr<ParameterSlider> hi_gain_slider;
+  std::unique_ptr<ParameterSlider> lpf_slider;
 
   std::unique_ptr<ParameterSlider> gain_sliders[4];
 

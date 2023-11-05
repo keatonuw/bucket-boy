@@ -1,10 +1,13 @@
+// Keaton Kowal Nov 2023
+
 #include "BBD.h"
 
 #define UPSAMP_FACT 4
 #define MAX_RATE(sr) ((sr * UPSAMP_FACT) / 2)
 #define MIN_RATE(sr) (sr / 100)
 
-BBD::BBD(float sample_rate) {
+BBD::BBD(float sample_rate)
+    : lo_shelf(sample_rate, false), hi_shelf(sample_rate, true) {
   clock.Init(sample_rate);
   clock.SetAmp(1.f);
   clock.SetFreq(440.0);
@@ -38,6 +41,7 @@ float BBD::process(float in) {
     fb += del_line[(pos + l) % length] * tap_lvls[i];
   }
   fb += leak * noise_amt;
+  fb = hi_shelf.process(lo_shelf.process(fb));
   fb = daisysp::SoftLimit(fb);
   return fb;
 }
@@ -78,48 +82,10 @@ void BBD::setTapLevel(int tap_num, float tap_lvl) {
   }
 }
 
-// BBD::BBD(float sample_rate, int num_channels) {
-//   output_channels = num_channels;
-//   clock.Init(sample_rate);
-//   clock.SetAmp(1.f);
-//   clock.SetFreq(440.0);
-//   clock.SetWaveform(daisysp::Oscillator::WAVE_SQUARE);
-//   length = 4096 * 4;
-//   pos = 0;
-//   fb = 0.f;
-//   fb_amt = 0.f;
-//   // memset(del_line, 0, 4096 * 4 * sizeof(float));
-// }
-//
-// void BBD::process(juce::AudioBuffer<float> &buffer) {
-//   // process buffer...
-//   for (int channel = 0; channel < buffer.getNumChannels(); channel++) {
-//     auto *channel_data = buffer.getWritePointer(channel);
-//     juce::ignoreUnused(channel_data);
-//
-//     if (channel == 0) {
-//       for (int i = 0; i < buffer.getNumSamples(); i++) {
-//         float in = channel_data[i];
-//         clock.Process();
-//         if (clock.IsEOR()) {
-//           this->samp(in + fb * fb_amt);
-//         }
-//         fb = del_line[(pos + length) % length];
-//         channel_data[i] = fb;
-//       }
-//     }
-//   }
-// }
-//
-//
-// void BBD::setFeedback(float feedback) {
-//   if (feedback < 1.f && feedback > 0.f) {
-//     fb_amt = feedback;
-//   }
-// }
-//
-// void BBD::setLength(int len) {
-//   if (len < 4096 * 4 && len > 0) {
-//     this->length = len;
-//   }
-// }
+void BBD::setLowGain(float lo_gain) { lo_shelf.setGain(lo_gain); }
+
+void BBD::setLowFreq(float lo_freq) { lo_shelf.setFreq(lo_freq); }
+
+void BBD::setHighGain(float hi_gain) { hi_shelf.setGain(hi_gain); }
+
+void BBD::setHighFreq(float hi_freq) { hi_shelf.setFreq(hi_freq); }
