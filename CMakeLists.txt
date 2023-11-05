@@ -1,12 +1,14 @@
 # Example Plugin CMAKE file
 # Nathan Blair May 2023 - modified from the example CMAKE file from JUCE
 
-set(ENV{PLUGIN_NAME} EXAMPLE)
+set(ENV{PLUGIN_NAME} BucketBoy)
 set(ENV{VERSION_NUMBER} 0x000001) # 0xVVMMPP (VV = version, MM = modification, PP = patch)
 set(ENV{VERSION_STRING} 0.0.1) # VV.MM.PP
-set(ENV{COMPANY_NAME} YOUR_COMPANY_NAME)
-set(ENV{MANUFACTURER_ID} MFID) # A four-character manufacturer id with at least one upper-case character
-set(ENV{PLUGIN_CODE} Plid) # A unique four-character plugin id with exactly one upper-case character
+set(ENV{COMPANY_NAME} kowalk)
+set(ENV{MANUFACTURER_ID} Kwlk) # A four-character manufacturer id with at least one upper-case character
+set(ENV{PLUGIN_CODE} Bbbd) # A unique four-character plugin id with exactly one upper-case character
+
+set(CMAKE_CXX_STANDARD 17)
 
 
 #--------------------------------------------------------------------------------
@@ -34,6 +36,7 @@ project($ENV{PLUGIN_NAME} VERSION $ENV{VERSION_STRING})
 #--------------------------------------------------------------------------------
 
 add_subdirectory(JUCE) # If you've put JUCE in a subdirectory
+add_subdirectory(DaisySP)
 
 #--------------------------------------------------------------------------------
 # If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
@@ -97,6 +100,7 @@ target_sources($ENV{PLUGIN_NAME}
         src/parameters/StateManager.cpp
         src/interface/ParameterSlider.cpp
         src/audio/Gain.cpp
+        src/audio/BBD.cpp
         )
 
 #--------------------------------------------------------------------------------
@@ -119,6 +123,7 @@ target_compile_definitions($ENV{PLUGIN_NAME}
         JUCE_DONT_ASSERT_ON_GLSL_COMPILE_ERROR=1
         JUCE_DISPLAY_SPLASH_SCREEN=0
         JUCE_MODAL_LOOPS_PERMITTED=1
+        JUCE_SILENCE_XCODE_15_LINKER_WARNING
 )
 
 
@@ -142,6 +147,7 @@ target_link_libraries($ENV{PLUGIN_NAME}
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags)
+        juce::juce_recommended_warning_flags
+        DaisySP)
 
 

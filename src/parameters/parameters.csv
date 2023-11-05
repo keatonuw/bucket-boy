@@ -1,2 +1,10 @@
 PARAMETER, MIN, MAX, GRAIN, EXP, DEFAULT, AUTOMATABLE, NAME, SUFFIX, TOOLTIP, TO_STRING_ARR
-GAIN, 0, 100, 0, 1, 50, 1, Gain, %, Loudness Parameter, 
+GAIN, 0, 100, 0.01, 1, 50, 1, Mix, %, Mix Parameter, 
+FB, 0, 100, 0.01, 0.4, 0, 1, Feedback, %, Feedback Amount,
+LEN, 0, 100, 0.01, 0.4, 25, 1, Clock Rate, %, Delay Length,
+STAGES, 128, 16384, 1, 1, 1024, 1, Delay Stages, st, BBD Stages,
+NOISE, 0, 100, 0.01, 1, 0, 1, Noise, %, Noise Amount,
+TAP_ONE, 0, 100, 0.01, 1, 0, 1, Tap 1, %, Short Tap Level,
+TAP_TWO, 0, 100, 0.01, 1, 0, 1, Tap 2, %, Medium 1 Tap Level,
+TAP_THREE, 0, 100, 0.01, 1, 0, 1, Tap 3, %, Medium 2 Tap Level,
+TAP_FOUR, 0, 100, 0.01, 1, 0, 1, Tap 4, %, Long Tap Level,

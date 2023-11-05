@@ -1,3 +1,7 @@
 [submodule "JUCE"]
 	path = JUCE
 	url = https://github.com/juce-framework/JUCE
+
+[submodule "DaisySP"]
+	path = DaisySP
+	url = git@github.com:electro-smith/DaisySP.git

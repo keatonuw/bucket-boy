@@ -2,7 +2,7 @@
 
 python src/parameters/create_parameters.py
 
-PLUGIN_NAME="EXAMPLE"
+PLUGIN_NAME="BucketBoy"
 MODE="RelWithDebInfo"
 
 if ! [ -d "build" ]; then
