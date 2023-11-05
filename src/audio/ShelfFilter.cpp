@@ -15,7 +15,7 @@ float ShelfFilter::process(float in) {
   this->xh = xhl;
   if (hp)
     return 0.5f * h0 * (in - ap_y) + in;
-  return 0.5f * h0 * (in - ap_y) + in;
+  return 0.5f * h0 * (in + ap_y) + in;
 }
 
 void ShelfFilter::setGain(float gain) { setGainAndFreq(gain, f); }
@@ -29,7 +29,12 @@ void ShelfFilter::setGainAndFreq(float gain, float freq) {
   if (g >= 0) {
     c = (std::tan(PI_F * wc / 2) - 1) / (std::tan(PI_F * wc / 2) + 1); // boost
   } else {
-    c = (std::tan(PI_F * wc / 2) - v0) / (std::tan(PI_F * wc / 2) + v0); // cut
+    if (hp) {
+      c = (std::tan(PI_F * wc / 2) - 1) / (std::tan(PI_F * wc / 2) + 1); // cut
+    } else {
+      c = (std::tan(PI_F * wc / 2) - v0) /
+          (std::tan(PI_F * wc / 2) + v0); // cut
+    }
   }
   g = gain;
   f = freq;
